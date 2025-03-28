@@ -27,11 +27,11 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-[#F7F7F7]">
       {/* Background Posts */}
-      <div className="fixed inset-0 -z-10 overflow-hidden opacity-75"> {/* Increase opacity */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FF6F61]/20 to-[#FF6F61]/10 pointer-events-none"></div> {/* Slightly stronger gradient */}
+      <div className="fixed inset-0 -z-10 overflow-hidden opacity-100"> {/* Set opacity to 100 */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FF6F61]/20 to-[#FF6F61]/10 pointer-events-none"></div>
         <div
-          className="absolute bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "15%", left: "10%", maxWidth: "300px", filter: "blur(0.5px)" }} // Reduce blur
+          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+          style={{ top: "15%", left: "10%", maxWidth: "300px" }} // Removed filter: blur
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>
@@ -42,8 +42,8 @@ const Home = () => {
           </div>
         </div>
         <div
-          className="absolute bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "30%", left: "60%", maxWidth: "300px", filter: "blur(0.5px)", animationDelay: "0.5s" }}
+          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+          style={{ top: "30%", left: "60%", maxWidth: "300px", animationDelay: "0.5s" }} // Removed filter: blur
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">r/</div>
@@ -54,8 +54,8 @@ const Home = () => {
           </div>
         </div>
         <div
-          className="absolute bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "45%", left: "10%", maxWidth: "300px", filter: "blur(0.5px)", animationDelay: "1s" }}
+          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+          style={{ top: "45%", left: "10%", maxWidth: "300px", animationDelay: "1s" }} // Removed filter: blur
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>
@@ -66,8 +66,8 @@ const Home = () => {
           </div>
         </div>
         <div
-          className="absolute bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "60%", left: "60%", maxWidth: "300px", filter: "blur(0.5px)", animationDelay: "1.5s" }}
+          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+          style={{ top: "60%", left: "60%", maxWidth: "300px", animationDelay: "1.5s" }} // Removed filter: blur
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">r/</div>
@@ -78,8 +78,8 @@ const Home = () => {
           </div>
         </div>
         <div
-          className="absolute bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "75%", left: "10%", maxWidth: "300px", filter: "blur(0.5px)", animationDelay: "2s" }}
+          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+          style={{ top: "75%", left: "10%", maxWidth: "300px", animationDelay: "2s" }} // Removed filter: blur
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>

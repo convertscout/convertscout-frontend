@@ -30,7 +30,10 @@ body {
 
 .animate-float {
   animation: float 10s ease-in-out infinite;
-  position: absolute; /* Matches Home.js */
+  position: absolute;
+  background-color: #fff; /* Ensure solid background */
+  color: #333; /* Ensure text is dark */
+  opacity: 1; /* Ensure full opacity */
 }
 
 /* Button hover effects */
