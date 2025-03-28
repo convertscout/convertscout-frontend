@@ -5,9 +5,14 @@
 /* Custom styling for ConvertScout index page */
 body {
   font-family: 'Inter', sans-serif;
-  margin: 0; /* Keep this from the Tailwind version if needed */
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure the background container is full-screen */
+.min-h-screen {
+  position: relative;
 }
 
 /* Float animation for background posts */
@@ -25,6 +30,7 @@ body {
 
 .animate-float {
   animation: float 10s ease-in-out infinite;
+  position: absolute; /* Matches Home.js absolute positioning */
 }
 
 /* Button hover effects */
