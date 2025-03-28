@@ -25,13 +25,13 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7]">
+    <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5"> {/* Apply gradient here */}
       {/* Background Posts */}
-      <div className="fixed inset-0 -z-10 overflow-hidden opacity-100"> {/* Set opacity to 100 */}
+      <div className="fixed inset-0 -z-10 overflow-hidden opacity-50">
         <div className="absolute inset-0 bg-gradient-to-b from-[#FF6F61]/20 to-[#FF6F61]/10 pointer-events-none"></div>
         <div
           className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "15%", left: "10%", maxWidth: "300px" }} // Removed filter: blur
+          style={{ top: "15%", left: "10%", maxWidth: "300px", filter: "blur(1px)" }}
         >
           <div className="flex items-start">
             <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>

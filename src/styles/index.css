@@ -29,11 +29,9 @@ body {
 }
 
 .animate-float {
-  animation: float 10s ease-in-out infinite;
-  position: absolute;
-  background-color: #fff; /* Ensure solid background */
-  color: #333; /* Ensure text is dark */
-  opacity: 1; /* Ensure full opacity */
+  animation: float 10s ease-in-out infinite !important;;
+  display: block !important;
+  
 }
 
 /* Button hover effects */
