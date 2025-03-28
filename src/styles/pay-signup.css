@@ -1,0 +1,24 @@
+/* Custom styling for ConvertScout pay-signup page */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Button hover effects */
+button, a.inline-block {
+    transition: all 0.3s ease;
+}
+
+button:hover, a.inline-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Input focus */
+input {
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    ring: 2px solid #FF6F61;
+}
