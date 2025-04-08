@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Chart from "chart.js/auto";
 import "../styles/dashboard.css";
 
@@ -10,28 +11,34 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get form data from localStorage
-    const storedFormData = JSON.parse(localStorage.getItem("formData"));
-    setFormData(storedFormData);
-
-    // Fetch scraped data from Firestore
-    const fetchData = async () => {
-      try {
-        const docRef = doc(db, "scraped_data", "latest");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setScrapedData(docSnap.data());
-        } else {
-          console.log("No data available");
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser); // if you track user
+        try {
+          const q = query(
+            collection(db, "scraped_data"),
+            where("email", "==", firebaseUser.email)
+          );
+          const querySnapshot = await getDocs(q);
+          const leadsData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setLeads(leadsData); // set this in your state
+        } catch (err) {
+          console.error("Error fetching leads:", err);
+        } finally {
+          setLoading(false); // if you use loading flag
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
+      } else {
+        setUser(null); // if you use user state
         setLoading(false);
       }
-    };
-    fetchData();
-  }, []);
+    });
+  
+    return () => unsubscribe();
+  }, []);  
 
   useEffect(() => {
     if (!scrapedData) return;
@@ -136,7 +143,7 @@ const Dashboard = () => {
                   <div className="bg-white/80 backdrop-blur-sm border border-white/30 shadow-lg rounded-xl p-5">
                     <h2 className="text-2xl font-bold text-[#FF6F61] mb-4">🔥 Hot Leads</h2>
                     <div id="leads-list" className="space-y-4">
-                      {scrapedData.leads.map((lead, index) => (
+                    {filteredLeads.map((lead, index) => (
                         <div
                           key={index}
                           className="lead-card bg-white border border-[#FF6F61]/20 shadow-lg rounded-xl p-4"
@@ -234,7 +241,7 @@ const Dashboard = () => {
                       🕵️ Competitor Complaints
                     </h2>
                     <div className="space-y-4">
-                      {scrapedData.competitor_complaints.map((complaint, index) => (
+                    {filteredComplaints.competitor_complaints.map((complaint, index) => (
                         <div
                           key={index}
                           className="bg-white border border-[#FF6F61]/20 shadow-lg rounded-xl p-4"
@@ -300,7 +307,7 @@ const Dashboard = () => {
                       ⚠️ Complaints About Your Company
                     </h2>
                     <div className="space-y-4">
-                      {scrapedData.company_complaints.map((complaint, index) => (
+                    {filteredComplaints.company_complaints.map((complaint, index) => (
                         <div
                           key={index}
                           className="bg-white border border-[#FF6F61]/20 shadow-lg rounded-xl p-4"
