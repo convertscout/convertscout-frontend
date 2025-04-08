@@ -16,79 +16,101 @@ const Home = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted with:", formData);
-    localStorage.setItem("formData", JSON.stringify(formData));
-    alert("Form submitted! Redirecting to dashboard...");
-    navigate("/dashboard");
-  };
+  
+    try {
+      const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Server error");
+      }
+  
+      const data = await response.json();
+  
+      // Optional: You can pass data to the dashboard if needed
+      // localStorage.setItem("scrapedData", JSON.stringify(data.data));
+  
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Failed to generate leads. Please try again.");
+    }
+  };  
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5"> {/* Apply gradient here */}
+    <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5">
       {/* Background Posts */}
       <div className="fixed inset-0 -z-10 overflow-hidden opacity-50">
         <div className="absolute inset-0 bg-gradient-to-b from-[#FF6F61]/20 to-[#FF6F61]/10 pointer-events-none"></div>
-        <div
-          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "15%", left: "10%", maxWidth: "300px", filter: "blur(1px)" }}
-        >
-          <div className="flex items-start">
-            <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>
-            <div>
-              <div className="font-semibold text-[#333333]">@CRMFail</div>
-              <p className="text-[#555555] text-sm">This software's a nightmare—need better!</p>
+
+        {/* Sample floating posts */}
+        {[
+          {
+            top: "15%",
+            left: "10%",
+            user: "@CRMFail",
+            handle: "𝕏",
+            msg: "This software's a nightmare—need better!",
+          },
+          {
+            top: "30%",
+            left: "60%",
+            user: "u/ShipSlow",
+            handle: "r/",
+            msg: "Shipping delays killing me—any fixes?",
+            delay: "0.5s",
+          },
+          {
+            top: "45%",
+            left: "10%",
+            user: "@SaaSStruggles",
+            handle: "𝕏",
+            msg: "Why is every tool so complicated? Just need something simple!",
+            delay: "1s",
+          },
+          {
+            top: "60%",
+            left: "60%",
+            user: "u/SupportWoes",
+            handle: "r/",
+            msg: "48 hours and still no response from customer service. Moving on.",
+            delay: "1.5s",
+          },
+          {
+            top: "75%",
+            left: "10%",
+            user: "@PriceShock",
+            handle: "𝕏",
+            msg: "Just saw their new pricing. Anyone know alternatives?",
+            delay: "2s",
+          },
+        ].map((post, index) => (
+          <div
+            key={index}
+            className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
+            style={{
+              top: post.top,
+              left: post.left,
+              maxWidth: "300px",
+              animationDelay: post.delay || "0s",
+            }}
+          >
+            <div className="flex items-start">
+              <div className="mr-3 text-[#FF6F61] font-bold">{post.handle}</div>
+              <div>
+                <div className="font-semibold text-[#333333]">{post.user}</div>
+                <p className="text-[#555555] text-sm">{post.msg}</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div
-          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "30%", left: "60%", maxWidth: "300px", animationDelay: "0.5s" }} // Removed filter: blur
-        >
-          <div className="flex items-start">
-            <div className="mr-3 text-[#FF6F61] font-bold">r/</div>
-            <div>
-              <div className="font-semibold text-[#333333]">u/ShipSlow</div>
-              <p className="text-[#555555] text-sm">Shipping delays killing me—any fixes?</p>
-            </div>
-          </div>
-        </div>
-        <div
-          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "45%", left: "10%", maxWidth: "300px", animationDelay: "1s" }} // Removed filter: blur
-        >
-          <div className="flex items-start">
-            <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>
-            <div>
-              <div className="font-semibold text-[#333333]">@SaaSStruggles</div>
-              <p className="text-[#555555] text-sm">Why is every tool so complicated? Just need something simple!</p>
-            </div>
-          </div>
-        </div>
-        <div
-          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "60%", left: "60%", maxWidth: "300px", animationDelay: "1.5s" }} // Removed filter: blur
-        >
-          <div className="flex items-start">
-            <div className="mr-3 text-[#FF6F61] font-bold">r/</div>
-            <div>
-              <div className="font-semibold text-[#333333]">u/SupportWoes</div>
-              <p className="text-[#555555] text-sm">48 hours and still no response from customer service. Moving on.</p>
-            </div>
-          </div>
-        </div>
-        <div
-          className="absolute bg-white rounded-lg p-4 shadow-sm transform transition-all duration-500 ease-in-out animate-float"
-          style={{ top: "75%", left: "10%", maxWidth: "300px", animationDelay: "2s" }} // Removed filter: blur
-        >
-          <div className="flex items-start">
-            <div className="mr-3 text-[#FF6F61] font-bold">𝕏</div>
-            <div>
-              <div className="font-semibold text-[#333333]">@PriceShock</div>
-              <p className="text-[#555555] text-sm">Just saw their new pricing. Anyone know alternatives?</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="container mx-auto px-4 py-8">
