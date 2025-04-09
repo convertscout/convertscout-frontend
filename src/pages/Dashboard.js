@@ -16,29 +16,22 @@ const Dashboard = () => {
       if (firebaseUser) {
         setUser(firebaseUser); // if you track user
         try {
-          const q = query(
-            collection(db, "scraped_data"),
-            where("email", "==", firebaseUser.email)
-          );
-          const querySnapshot = await getDocs(q);
-          const leadsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setLeads(leadsData); // set this in your state
+          const response = await fetch(`https://convertscout-backend.onrender.com/api/leads/${firebaseUser.email}`);
+          const result = await response.json();
+          setLeads(result.data || []);
         } catch (err) {
-          console.error("Error fetching leads:", err);
+          console.error("Error fetching leads from backend:", err);
         } finally {
-          setLoading(false); // if you use loading flag
+          setLoading(false);
         }
       } else {
-        setUser(null); // if you use user state
+        setUser(null);
         setLoading(false);
       }
     });
   
     return () => unsubscribe();
-  }, []);  
+  }, []);   
 
   useEffect(() => {
     if (!scrapedData) return;
