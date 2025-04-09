@@ -18,7 +18,7 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
@@ -27,18 +27,20 @@ const Home = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (!response.ok) throw new Error("Server error");
-
+  
       const data = await response.json();
       console.log("✅ Lead submitted:", data);
-
+  
+      localStorage.setItem("userEmail", formData.email); // ✅ Save email to use on dashboard
+  
       navigate("/dashboard");
     } catch (error) {
       console.error("❌ Submission error:", error);
       alert("Failed to generate leads. Please try again.");
     }
-  };
+  };  
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5">
