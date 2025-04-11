@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [filteredLeads, setFilteredLeads] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch leads for the logged-in user's email
+  // ✅ Fetch leads for user from Firestore
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
@@ -21,20 +21,25 @@ const Dashboard = () => {
       try {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
-        const latest = result?.data?.[0]; // Most recent
+        const latest = result?.data?.[0]; // get the latest record
+
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
 
-        // Try to extract scrapedData from Firestore response
         if (latest?.leads && latest?.competitorComplaints && latest?.companyComplaints) {
           setScrapedData({
             leads: latest.leads,
-            competitor_complaints: latest.competitorComplaints,
-            company_complaints: latest.companyComplaints,
+            competitorComplaints: latest.competitorComplaints,
+            companyComplaints: latest.companyComplaints,
+          });
+
+          console.log("📦 Scraped data set:", {
+            leads: latest.leads,
+            competitorComplaints: latest.competitorComplaints,
+            companyComplaints: latest.companyComplaints,
           });
         }
 
-        // Optional: for welcome message
         if (latest?.businessName && latest?.niche) {
           setFormData({
             businessName: latest.businessName,
@@ -51,7 +56,7 @@ const Dashboard = () => {
     fetchLeads();
   }, []);
 
-  // Chart rendering logic
+  // ✅ Chart rendering
   useEffect(() => {
     if (!scrapedData) return;
 
@@ -73,6 +78,7 @@ const Dashboard = () => {
         },
       ],
     };
+
     const sourceCtx = document.getElementById("sourceChart")?.getContext("2d");
     if (sourceCtx) {
       new Chart(sourceCtx, {
@@ -97,6 +103,7 @@ const Dashboard = () => {
         },
       ],
     };
+
     const complaintsCtx = document.getElementById("complaintsChart")?.getContext("2d");
     if (complaintsCtx) {
       new Chart(complaintsCtx, {
@@ -117,6 +124,7 @@ const Dashboard = () => {
     });
   }, [scrapedData]);
 
+  // ✅ Loader state
   if (loading) {
     return (
       <div className="text-center py-20 text-lg text-[#FF6F61] font-medium animate-pulse">
@@ -124,8 +132,24 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  // ✅ No leads fallback
+  if (!leads || leads.length === 0) {
+    return (
+      <div className="text-center py-20 text-lg text-[#999] font-medium">
+        No data available. Try again or wait a few seconds.
+      </div>
+    );
+  }
   
-  if (!scrapedData || scrapedData.leads?.length === 0) return <div className="text-center py-16">No data available</div>;
+  if (!leads || leads.length === 0) {
+    return (
+      <div className="text-center py-20 text-lg text-[#999] font-medium">
+        No data available. Try again or wait a few seconds.
+      </div>
+    );
+  }
+  
 
   return (
     <div className="min-h-screen bg-[#F7F7F7]">
