@@ -16,30 +16,23 @@ const Dashboard = () => {
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
-
+  
     const fetchLeads = async () => {
       try {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
-        const latest = result?.data?.[0]; // get the latest record
-
+        const latest = result?.data?.[0];
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
-
-        if (latest?.leads && latest?.competitorComplaints && latest?.companyComplaints) {
+  
+        if (latest?.reddit?.leads?.length > 0) {
           setScrapedData({
-            leads: latest.leads,
-            competitorComplaints: latest.competitorComplaints,
-            companyComplaints: latest.companyComplaints,
-          });
-
-          console.log("📦 Scraped data set:", {
-            leads: latest.leads,
-            competitorComplaints: latest.competitorComplaints,
-            companyComplaints: latest.companyComplaints,
+            leads: latest.reddit.leads,
+            competitor_complaints: latest.reddit.competitorComplaints,
+            company_complaints: latest.reddit.companyComplaints,
           });
         }
-
+  
         if (latest?.businessName && latest?.niche) {
           setFormData({
             businessName: latest.businessName,
@@ -52,9 +45,10 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
+  
     fetchLeads();
   }, []);
+  
 
   // ✅ Chart rendering
   useEffect(() => {
