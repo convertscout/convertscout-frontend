@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -8,30 +9,31 @@ import "../styles/dashboard.css";
 const Dashboard = () => {
   const [formData, setFormData] = useState(null);
   const [scrapedData, setScrapedData] = useState(null);
+  const [leads, setLeads] = useState([]);
+  const [filteredLeads, setFilteredLeads] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser); // if you track user
-        try {
-          const response = await fetch(`https://convertscout-backend.onrender.com/api/leads/${firebaseUser.email}`);
-          const result = await response.json();
-          setLeads(result.data || []);
-        } catch (err) {
-          console.error("Error fetching leads from backend:", err);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setUser(null);
+    const email = localStorage.getItem("userEmail");
+    if (!email) return;
+  
+    const fetchLeads = async () => {
+      try {
+        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+        const result = await res.json();
+        setLeads(result.data || []);
+        setFilteredLeads(result.data || []);
+
+      } catch (err) {
+        console.error("❌ Error fetching leads:", err);
+      } finally {
         setLoading(false);
       }
-    });
+    };
   
-    return () => unsubscribe();
-  }, []);   
+    fetchLeads();
+  }, []);
+    
 
   useEffect(() => {
     if (!scrapedData) return;
@@ -136,6 +138,11 @@ const Dashboard = () => {
                   <div className="bg-white/80 backdrop-blur-sm border border-white/30 shadow-lg rounded-xl p-5">
                     <h2 className="text-2xl font-bold text-[#FF6F61] mb-4">🔥 Hot Leads</h2>
                     <div id="leads-list" className="space-y-4">
+                    {filteredLeads.length === 0 && (
+                     <div className="text-sm text-center text-gray-500">
+                         No data found. We're still fetching leads. Try refreshing in a few seconds!
+                      </div>
+                        )}
                     {filteredLeads.map((lead, index) => (
                         <div
                           key={index}
