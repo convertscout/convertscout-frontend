@@ -9,7 +9,7 @@ const Home = () => {
     niche: "",
     competitor: "",
     email: "",
-    problemSolved: "", // ✅ added this field
+    problemSolved: "",
   });
 
   const handleChange = (e) => {
@@ -18,7 +18,7 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
@@ -27,24 +27,27 @@ const Home = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) throw new Error("Server error");
-  
+
       const data = await response.json();
       console.log("✅ Lead submitted:", data);
-  
-      localStorage.setItem("userEmail", formData.email); // ✅ Save email to use on dashboard
-  
-      navigate("/dashboard");
+
+      // Save the email for dashboard query
+      localStorage.setItem("userEmail", formData.email);
+
+      // Delay navigation slightly to give backend time to save data
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000); // 2-second buffer (adjust as needed)
     } catch (error) {
       console.error("❌ Submission error:", error);
       alert("Failed to generate leads. Please try again.");
     }
-  };  
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5">
-      {/* UI layout omitted for brevity */}
       <div className="container mx-auto px-4 py-8">
         <div className="py-16 flex items-center justify-center">
           <div className="w-full max-w-md relative z-10">

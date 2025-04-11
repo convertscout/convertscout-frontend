@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -13,38 +12,59 @@ const Dashboard = () => {
   const [filteredLeads, setFilteredLeads] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch leads for the logged-in user's email
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
-  
+
     const fetchLeads = async () => {
       try {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
+        const latest = result?.data?.[0]; // Most recent
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
 
+        // Try to extract scrapedData from Firestore response
+        if (latest?.leads && latest?.competitorComplaints && latest?.companyComplaints) {
+          setScrapedData({
+            leads: latest.leads,
+            competitor_complaints: latest.competitorComplaints,
+            company_complaints: latest.companyComplaints,
+          });
+        }
+
+        // Optional: for welcome message
+        if (latest?.businessName && latest?.niche) {
+          setFormData({
+            businessName: latest.businessName,
+            niche: latest.niche,
+          });
+        }
       } catch (err) {
         console.error("❌ Error fetching leads:", err);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchLeads();
   }, []);
-    
 
+  // Chart rendering logic
   useEffect(() => {
     if (!scrapedData) return;
 
-    // Source Chart
     const sourcesData = {
       labels: ["Reddit", "G2", "Capterra"],
       datasets: [
         {
           label: "Leads",
-          data: [scrapedData.leads.filter((lead) => lead.platform === "Reddit").length, scrapedData.leads.filter((lead) => lead.platform === "G2").length, scrapedData.leads.filter((lead) => lead.platform === "Capterra").length],
+          data: [
+            scrapedData.leads.filter((lead) => lead.platform === "Reddit").length,
+            scrapedData.leads.filter((lead) => lead.platform === "G2").length,
+            scrapedData.leads.filter((lead) => lead.platform === "Capterra").length,
+          ],
           backgroundColor: "#FF6F61",
           borderColor: "#E45A4E",
           borderWidth: 1,
@@ -67,7 +87,6 @@ const Dashboard = () => {
       });
     }
 
-    // Complaints Pie Chart (Dummy data for now, can be updated with real data)
     const complaintsData = {
       labels: ["Slow", "Cost", "Bugs"],
       datasets: [
@@ -91,7 +110,6 @@ const Dashboard = () => {
       });
     }
 
-    // Animate lead cards
     const leadCards = document.querySelectorAll(".lead-card");
     leadCards.forEach((card, index) => {
       card.style.animationDelay = `${index * 0.1}s`;
@@ -99,8 +117,15 @@ const Dashboard = () => {
     });
   }, [scrapedData]);
 
-  if (loading) return <div className="text-center py-16">Loading...</div>;
-  if (!formData || !scrapedData) return <div className="text-center py-16">No data available</div>;
+  if (loading) {
+    return (
+      <div className="text-center py-20 text-lg text-[#FF6F61] font-medium animate-pulse">
+        🔍 Scraping in progress... Please hang tight while we find your leads!
+      </div>
+    );
+  }
+  
+  if (!scrapedData || scrapedData.leads?.length === 0) return <div className="text-center py-16">No data available</div>;
 
   return (
     <div className="min-h-screen bg-[#F7F7F7]">
