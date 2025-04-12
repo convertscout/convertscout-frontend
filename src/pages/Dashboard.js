@@ -16,23 +16,26 @@ const Dashboard = () => {
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
     if (!email) return;
-  
+
     const fetchLeads = async () => {
       try {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
         const latest = result?.data?.[0];
+
+        console.log("✅ Firestore latest entry:", latest);
+
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
-  
+
         if (latest?.reddit?.leads?.length > 0) {
           setScrapedData({
             leads: latest.reddit.leads,
-            competitor_complaints: latest.reddit.competitorComplaints,
-            company_complaints: latest.reddit.companyComplaints,
+            competitor_complaints: latest.reddit.competitorComplaints || [],
+            company_complaints: latest.reddit.companyComplaints || [],
           });
         }
-  
+
         if (latest?.businessName && latest?.niche) {
           setFormData({
             businessName: latest.businessName,
@@ -45,12 +48,11 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-  
+
     fetchLeads();
   }, []);
-  
 
-  // ✅ Chart rendering
+  // ✅ Render charts when scraped data is loaded
   useEffect(() => {
     if (!scrapedData) return;
 
@@ -118,7 +120,7 @@ const Dashboard = () => {
     });
   }, [scrapedData]);
 
-  // ✅ Loader state
+  // ✅ Show loading while scraping
   if (loading) {
     return (
       <div className="text-center py-20 text-lg text-[#FF6F61] font-medium animate-pulse">
@@ -127,16 +129,8 @@ const Dashboard = () => {
     );
   }
 
-  // ✅ No leads fallback
-  if (!leads || leads.length === 0) {
-    return (
-      <div className="text-center py-20 text-lg text-[#999] font-medium">
-        No data available. Try again or wait a few seconds.
-      </div>
-    );
-  }
-  
-  if (!leads || leads.length === 0) {
+  // ✅ Show message if no leads
+  if (!scrapedData || !scrapedData.leads || scrapedData.leads.length === 0) {
     return (
       <div className="text-center py-20 text-lg text-[#999] font-medium">
         No data available. Try again or wait a few seconds.
