@@ -39,7 +39,7 @@ const Home = () => {
       // Delay navigation slightly to give backend time to save data
       setTimeout(() => {
         navigate("/dashboard");
-      }, 2000); // 2-second buffer (adjust as needed)
+      }, 7000);
     } catch (error) {
       console.error("❌ Submission error:", error);
       alert("Failed to generate leads. Please try again.");

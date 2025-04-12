@@ -15,7 +15,10 @@ const Dashboard = () => {
   // ✅ Fetch leads for user from Firestore
   useEffect(() => {
     const email = localStorage.getItem("userEmail");
-    if (!email) return;
+    if (!email) {
+      console.warn("⚠️ No email in localStorage");
+      return;
+    }
 
     const fetchLeads = async () => {
       try {
@@ -23,17 +26,20 @@ const Dashboard = () => {
         const result = await res.json();
         const latest = result?.data?.[0];
 
-        console.log("✅ Firestore latest entry:", latest);
+        console.log("✅ Fetched latest Firestore entry:", latest);
 
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
 
+        // ✅ Extract scrapedData
         if (latest?.reddit?.leads?.length > 0) {
           setScrapedData({
             leads: latest.reddit.leads,
             competitor_complaints: latest.reddit.competitorComplaints || [],
             company_complaints: latest.reddit.companyComplaints || [],
           });
+        } else {
+          console.warn("⚠️ No leads found inside latest.reddit");
         }
 
         if (latest?.businessName && latest?.niche) {
@@ -129,7 +135,7 @@ const Dashboard = () => {
     );
   }
 
-  // ✅ Show message if no leads
+  // ✅ Show message if no scraped data available
   if (!scrapedData || !scrapedData.leads || scrapedData.leads.length === 0) {
     return (
       <div className="text-center py-20 text-lg text-[#999] font-medium">
