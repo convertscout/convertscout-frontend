@@ -25,13 +25,12 @@ const Dashboard = () => {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
         const latest = result?.data?.[0];
-
-        console.log("✅ Fetched latest Firestore entry:", latest);
-
+    
+        console.log("✅ Fetched from Firestore:", latest);
+    
         setLeads(result.data || []);
         setFilteredLeads(result.data || []);
-
-        // ✅ Extract scrapedData
+    
         if (latest?.reddit?.leads?.length > 0) {
           setScrapedData({
             leads: latest.reddit.leads,
@@ -39,9 +38,9 @@ const Dashboard = () => {
             company_complaints: latest.reddit.companyComplaints || [],
           });
         } else {
-          console.warn("⚠️ No leads found inside latest.reddit");
+          console.warn("⚠️ Scraped data not yet available.");
         }
-
+    
         if (latest?.businessName && latest?.niche) {
           setFormData({
             businessName: latest.businessName,
@@ -53,7 +52,7 @@ const Dashboard = () => {
       } finally {
         setLoading(false);
       }
-    };
+    };    
 
     fetchLeads();
   }, []);
