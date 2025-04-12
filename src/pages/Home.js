@@ -36,6 +36,8 @@ const Home = () => {
       // Save the email for dashboard query
       localStorage.setItem("userEmail", formData.email);
 
+      console.log("✅ Lead submitted:", data);
+
       // Delay navigation slightly to give backend time to save data
       setTimeout(() => {
         navigate("/dashboard");
