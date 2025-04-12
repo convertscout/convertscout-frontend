@@ -20,31 +20,29 @@ const Home = () => {
     e.preventDefault();
 
     try {
+      // ✅ Save email to localStorage early
+      localStorage.setItem("userEmail", formData.email);
+
+      // ✅ Make POST request to backend
       const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Server error");
-
       const data = await response.json();
-      console.log("✅ Lead submitted:", data);
 
-      // Save the email for dashboard query
-      localStorage.setItem("userEmail", formData.email);
+      if (!response.ok) {
+        throw new Error(data?.error || "Server error while submitting lead");
+      }
 
-      console.log("✅ Lead submitted:", data);
+      console.log("✅ Lead submitted and scraping started:", data.message);
 
-      // Delay navigation slightly to give backend time to save data
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 40000);
+      // ✅ Immediately navigate since backend is scraping in background
+      navigate("/dashboard");
     } catch (error) {
-      console.error("❌ Submission error:", error);
-      alert("Failed to generate leads. Please try again.");
+      console.error("❌ Submission error:", error.message);
+      alert("Submission failed: " + error.message);
     }
   };
 
