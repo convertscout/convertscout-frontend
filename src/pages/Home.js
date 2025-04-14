@@ -16,33 +16,53 @@ const Home = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const waitForScrapedData = async (email, maxAttempts = 10, interval = 3000) => {
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+      const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+      const result = await res.json();
+      const latest = result?.data?.[0];
+
+      if (latest?.reddit?.leads?.length > 0) {
+        return true;
+      }
+
+      attempts++;
+      await new Promise((resolve) => setTimeout(resolve, interval));
+    }
+
+    return false;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // ✅ Save email to localStorage early
-      localStorage.setItem("userEmail", formData.email);
-
-      // ✅ Make POST request to backend
       const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(formData),
       });
 
+      if (!response.ok) throw new Error("Server error");
+
       const data = await response.json();
+      localStorage.setItem("userEmail", formData.email);
 
-      if (!response.ok) {
-        throw new Error(data?.error || "Server error while submitting lead");
+      // Wait for scraped data to become available
+      const ready = await waitForScrapedData(formData.email);
+
+      if (ready) {
+        navigate("/dashboard");
+      } else {
+        alert("Leads are still being processed. Please try again shortly.");
       }
-
-      console.log("✅ Lead submitted and scraping started:", data.message);
-
-      // ✅ Immediately navigate since backend is scraping in background
-      navigate("/dashboard");
     } catch (error) {
-      console.error("❌ Submission error:", error.message);
-      alert("Submission failed: " + error.message);
+      console.error("❌ Submission error:", error);
+      alert("Failed to generate leads. Please try again.");
     }
   };
 
