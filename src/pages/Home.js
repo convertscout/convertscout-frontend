@@ -11,63 +11,53 @@ const Home = () => {
     email: "",
     problemSolved: "",
   });
-  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const waitForScrapedData = async (email, maxAttempts = 30, interval = 3000) => {
-    let attempts = 0;
+  // Wait until backend scraped data appears
+  const waitForScrapedData = async (email, maxTries = 25, interval = 3000) => {
+    let tries = 0;
+    while (tries < maxTries) {
+      const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+      const result = await res.json();
+      const latest = result?.data?.[0];
 
-    while (attempts < maxAttempts) {
-      try {
-        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
-        const result = await res.json();
-        const latest = result?.data?.[0];
-
-        if (latest?.reddit?.leads?.length > 0) {
-          return true;
-        }
-      } catch (err) {
-        console.error("Polling error:", err);
+      const reddit = latest?.reddit;
+      if (reddit && reddit.leads?.length > 0) {
+        return true;
       }
 
-      attempts++;
       await new Promise((resolve) => setTimeout(resolve, interval));
+      tries++;
     }
-
     return false;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
-
     try {
-      const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
+      const payload = { ...formData };
+      localStorage.setItem("userEmail", formData.email); // ✅ Save for use in Dashboard
+
+      const res = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error("Server error");
+      if (!res.ok) throw new Error("Failed to submit form");
 
-      localStorage.setItem("userEmail", formData.email);
-      const ready = await waitForScrapedData(formData.email);
-
-      if (ready) {
+      const scrapingReady = await waitForScrapedData(formData.email);
+      if (scrapingReady) {
         navigate("/dashboard");
       } else {
-        alert("Leads are still being processed. Please try again shortly.");
+        alert("We're still fetching leads. Try again in a few seconds.");
       }
-    } catch (error) {
-      console.error("❌ Submission error:", error);
-      alert("Failed to generate leads. Please try again.");
-    } finally {
-      setSubmitting(false);
+    } catch (err) {
+      console.error("❌ Submission failed:", err);
+      alert("Something went wrong. Please try again.");
     }
   };
 
