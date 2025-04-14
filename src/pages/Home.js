@@ -11,21 +11,26 @@ const Home = () => {
     email: "",
     problemSolved: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const waitForScrapedData = async (email, maxAttempts = 10, interval = 3000) => {
+  const waitForScrapedData = async (email, maxAttempts = 30, interval = 3000) => {
     let attempts = 0;
 
     while (attempts < maxAttempts) {
-      const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
-      const result = await res.json();
-      const latest = result?.data?.[0];
+      try {
+        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+        const result = await res.json();
+        const latest = result?.data?.[0];
 
-      if (latest?.reddit?.leads?.length > 0) {
-        return true;
+        if (latest?.reddit?.leads?.length > 0) {
+          return true;
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
       }
 
       attempts++;
@@ -37,6 +42,7 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
     try {
       const response = await fetch("https://convertscout-backend.onrender.com/api/leads", {
@@ -49,10 +55,7 @@ const Home = () => {
 
       if (!response.ok) throw new Error("Server error");
 
-      const data = await response.json();
       localStorage.setItem("userEmail", formData.email);
-
-      // Wait for scraped data to become available
       const ready = await waitForScrapedData(formData.email);
 
       if (ready) {
@@ -63,6 +66,8 @@ const Home = () => {
     } catch (error) {
       console.error("❌ Submission error:", error);
       alert("Failed to generate leads. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
