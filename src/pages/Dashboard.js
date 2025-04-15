@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Chart from "chart.js/auto";
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
   const [formData, setFormData] = useState(null);
   const [scrapedData, setScrapedData] = useState(null);
-  const [leads, setLeads] = useState([]);
   const [filteredLeads, setFilteredLeads] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,12 +21,11 @@ const Dashboard = () => {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
         const latest = result?.data?.[0];
-    
+
         console.log("✅ Fetched from Firestore:", latest);
-    
-        setLeads(result.data || []);
-        setFilteredLeads(result.data || []);
-    
+
+        setFilteredLeads(latest?.reddit?.leads || []);
+
         if (latest?.reddit?.leads?.length > 0) {
           setScrapedData({
             leads: latest.reddit.leads,
@@ -40,7 +35,7 @@ const Dashboard = () => {
         } else {
           console.warn("⚠️ Scraped data not yet available.");
         }
-    
+
         if (latest?.businessName && latest?.niche) {
           setFormData({
             businessName: latest.businessName,
@@ -52,7 +47,7 @@ const Dashboard = () => {
       } finally {
         setLoading(false);
       }
-    };    
+    };
 
     fetchLeads();
   }, []);
