@@ -283,7 +283,7 @@ const Dashboard = () => {
                       🕵️ Competitor Complaints
                     </h2>
                     <div className="space-y-4">
-                    {filteredComplaints.competitor_complaints.map((complaint, index) => (
+                    {scrapedData.competitor_complaints.map((complaint, index) => (
                         <div
                           key={index}
                           className="bg-white border border-[#FF6F61]/20 shadow-lg rounded-xl p-4"
@@ -349,7 +349,7 @@ const Dashboard = () => {
                       ⚠️ Complaints About Your Company
                     </h2>
                     <div className="space-y-4">
-                    {filteredComplaints.company_complaints.map((complaint, index) => (
+                    {scrapedData.company_complaints.map((complaint, index) => (
                         <div
                           key={index}
                           className="bg-white border border-[#FF6F61]/20 shadow-lg rounded-xl p-4"
