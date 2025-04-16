@@ -12,19 +12,24 @@ const Home = () => {
     problemSolved: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Wait until backend scraped data appears
   const waitForScrapedData = async (email, maxTries = 25, interval = 3000) => {
     let tries = 0;
+
     while (tries < maxTries) {
+      setProgress((tries / maxTries) * 100);
+
       const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
       const result = await res.json();
       const latest = result?.data?.[0];
-
       const reddit = latest?.reddit;
+
       if (reddit && reddit.leads?.length > 0) {
         return true;
       }
@@ -32,32 +37,43 @@ const Home = () => {
       await new Promise((resolve) => setTimeout(resolve, interval));
       tries++;
     }
+
     return false;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setProgress(5);
+
     try {
-      const payload = { ...formData };
-      localStorage.setItem("userEmail", formData.email); // ✅ Save for use in Dashboard
+      localStorage.setItem("userEmail", formData.email);
 
       const res = await fetch("https://convertscout-backend.onrender.com/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to submit form");
+      if (!res.ok) throw new Error("Failed to submit");
 
-      const scrapingReady = await waitForScrapedData(formData.email);
-      if (scrapingReady) {
+      setProgress(20);
+
+      const ready = await waitForScrapedData(formData.email);
+
+      if (ready) {
+        setProgress(100);
         navigate("/dashboard");
       } else {
-        alert("We're still fetching leads. Try again in a few seconds.");
+        alert("We're still processing your leads. Please try again shortly.");
+        setIsLoading(false);
+        setProgress(0);
       }
     } catch (err) {
       console.error("❌ Submission failed:", err);
       alert("Something went wrong. Please try again.");
+      setIsLoading(false);
+      setProgress(0);
     }
   };
 
@@ -139,12 +155,24 @@ const Home = () => {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-[#FF6F61] hover:bg-[#E55A4B] text-white font-medium py-2 px-4 rounded-md transition-all duration-300 transform hover:translate-y-[-2px]"
-                >
-                  Reveal My Leads
-                </button>
+                {isLoading ? (
+                  <div className="w-full bg-gray-200 rounded-full h-4 mt-4">
+                    <div
+                      className="bg-[#FF6F61] h-4 rounded-full transition-all duration-500 ease-in-out"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                    <p className="text-sm text-center mt-2 text-[#FF6F61] font-medium">
+                      {progress < 100 ? "Finding leads..." : "Leads ready!"}
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    type="submit"
+                    className="w-full bg-[#FF6F61] hover:bg-[#E55A4B] text-white font-medium py-2 px-4 rounded-md transition-all duration-300 transform hover:translate-y-[-2px]"
+                  >
+                    Reveal My Leads
+                  </button>
+                )}
               </form>
             </div>
           </div>
