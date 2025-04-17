@@ -10,6 +10,9 @@ const Home = () => {
     competitor: "",
     email: "",
     problemSolved: "",
+    targetCustomer: "",
+    industryKeywords: "",
+    painSummary: ""
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -22,30 +25,30 @@ const Home = () => {
   const waitForScrapedData = async (email, maxTries = 25, interval = 3000) => {
     return new Promise(async (resolve) => {
       let tries = 0;
-  
+
       const poll = async () => {
         const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
         const result = await res.json();
         const latest = result?.data?.[0];
         const reddit = latest?.reddit;
-  
-        const percent = Math.min(((tries + 1) / maxTries) * 100, 99); // cap at 99% until done
+
+        const percent = Math.min(((tries + 1) / maxTries) * 100, 99);
         setProgress(percent);
-  
+
         if (reddit && reddit.leads?.length > 0) {
           setProgress(100);
           return resolve(true);
         }
-  
+
         tries++;
         if (tries >= maxTries) return resolve(false);
-  
+
         setTimeout(poll, interval);
       };
-  
+
       poll();
     });
-  };  
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -156,6 +159,45 @@ const Home = () => {
                     placeholder="e.g., managing leads, reducing churn"
                     className="w-full px-4 py-2 border rounded-md"
                     value={formData.problemSolved}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Who is your target customer?</label>
+                  <input
+                    type="text"
+                    name="targetCustomer"
+                    placeholder="e.g., lawyers, real estate agents, consultants"
+                    className="w-full px-4 py-2 border rounded-md"
+                    value={formData.targetCustomer}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Enter 2–3 keywords related to your industry</label>
+                  <input
+                    type="text"
+                    name="industryKeywords"
+                    placeholder="e.g., client intake, case tracking, contract drafting"
+                    className="w-full px-4 py-2 border rounded-md"
+                    value={formData.industryKeywords}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>What's the #1 pain point your users face?</label>
+                  <input
+                    type="text"
+                    name="painSummary"
+                    placeholder="e.g., forgetting client follow-ups"
+                    className="w-full px-4 py-2 border rounded-md"
+                    value={formData.painSummary}
                     onChange={handleChange}
                     required
                   />
