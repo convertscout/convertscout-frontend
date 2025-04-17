@@ -20,26 +20,32 @@ const Home = () => {
   };
 
   const waitForScrapedData = async (email, maxTries = 25, interval = 3000) => {
-    let tries = 0;
-
-    while (tries < maxTries) {
-      setProgress((tries / maxTries) * 100);
-
-      const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
-      const result = await res.json();
-      const latest = result?.data?.[0];
-      const reddit = latest?.reddit;
-
-      if (reddit && reddit.leads?.length > 0) {
-        return true;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, interval));
-      tries++;
-    }
-
-    return false;
-  };
+    return new Promise(async (resolve) => {
+      let tries = 0;
+  
+      const poll = async () => {
+        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+        const result = await res.json();
+        const latest = result?.data?.[0];
+        const reddit = latest?.reddit;
+  
+        const percent = Math.min(((tries + 1) / maxTries) * 100, 99); // cap at 99% until done
+        setProgress(percent);
+  
+        if (reddit && reddit.leads?.length > 0) {
+          setProgress(100);
+          return resolve(true);
+        }
+  
+        tries++;
+        if (tries >= maxTries) return resolve(false);
+  
+        setTimeout(poll, interval);
+      };
+  
+      poll();
+    });
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
