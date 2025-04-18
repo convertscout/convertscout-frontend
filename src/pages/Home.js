@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/index.css";
 
@@ -9,7 +9,6 @@ const Home = () => {
     niche: "",
     competitor: "",
     email: "",
-    problemSolved: "",
     targetCustomer: "",
     industryKeywords: "",
     painSummary: ""
@@ -22,33 +21,16 @@ const Home = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const waitForScrapedData = async (email, maxTries = 25, interval = 3000) => {
-    return new Promise(async (resolve) => {
-      let tries = 0;
-
-      const poll = async () => {
-        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
-        const result = await res.json();
-        const latest = result?.data?.[0];
-        const reddit = latest?.reddit;
-
-        const percent = Math.min(((tries + 1) / maxTries) * 100, 99);
-        setProgress(percent);
-
-        if (reddit && reddit.leads?.length > 0) {
-          setProgress(100);
-          return resolve(true);
-        }
-
-        tries++;
-        if (tries >= maxTries) return resolve(false);
-
-        setTimeout(poll, interval);
-      };
-
-      poll();
-    });
-  };
+  // 🔁 Fake animation loop for beta progress
+  useEffect(() => {
+    let timer;
+    if (isLoading && progress < 90) {
+      timer = setInterval(() => {
+        setProgress((prev) => Math.min(prev + 5, 90));
+      }, 500);
+    }
+    return () => clearInterval(timer);
+  }, [isLoading, progress]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,18 +48,20 @@ const Home = () => {
 
       if (!res.ok) throw new Error("Failed to submit");
 
-      setProgress(20);
-
+      // 🚫 Future use: Real scraping wait logic
+      /*
       const ready = await waitForScrapedData(formData.email);
-
       if (ready) {
         setProgress(100);
         navigate("/dashboard");
-      } else {
-        alert("We're still processing your leads. Please try again shortly.");
-        setIsLoading(false);
-        setProgress(0);
       }
+      */
+
+      // ✅ Simulate short wait then redirect
+      setTimeout(() => {
+        setProgress(100);
+        navigate("/dashboard");
+      }, 1500);
     } catch (err) {
       console.error("❌ Submission failed:", err);
       alert("Something went wrong. Please try again.");
@@ -89,7 +73,13 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FF6F61]/10 to-[#FF6F61]/5">
       <div className="container mx-auto px-4 py-8">
-        <div className="py-16 flex items-center justify-center">
+        <div className="py-8 text-center">
+          <span className="bg-[#FF6F61]/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+            #BETA
+          </span>
+        </div>
+
+        <div className="py-4 flex items-center justify-center">
           <div className="w-full max-w-md relative z-10">
             <div className="relative bg-white rounded-xl shadow-lg p-8 border border-white/30">
               <h2 className="text-3xl font-bold text-[#FF6F61] mb-2 text-center">
@@ -152,19 +142,6 @@ const Home = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Describe the Pain You Solve</label>
-                  <input
-                    type="text"
-                    name="problemSolved"
-                    placeholder="e.g., managing leads, reducing churn"
-                    className="w-full px-4 py-2 border rounded-md"
-                    value={formData.problemSolved}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
                   <label>Who is your target customer?</label>
                   <input
                     type="text"
@@ -210,7 +187,7 @@ const Home = () => {
                       style={{ width: `${progress}%` }}
                     ></div>
                     <p className="text-sm text-center mt-2 text-[#FF6F61] font-medium">
-                      {progress < 100 ? "Finding leads..." : "Leads ready!"}
+                      {progress < 100 ? "Preparing your leads..." : "Leads ready!"}
                     </p>
                   </div>
                 ) : (
