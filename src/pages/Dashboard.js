@@ -25,18 +25,17 @@ const Dashboard = () => {
 
         const businessName = latest?.businessName || "Your Startup";
         const competitor = latest?.competitor || "Hubspot";
-        const target = latest?.targetCustomer || "consultants";
+        const target = latest?.targetCustomer || "small business owners";
         const keywords = latest?.industryKeywords?.split(",").map(k => k.trim()).filter(Boolean) || [];
         const primaryKeyword = keywords[0] || "tools";
-        const pain = latest?.painSummary || "keeping client work organized";
+        const pain = latest?.painSummary || "managing workflows";
 
-        // 🧪 Fake personalized results
         const fakeLeads = [
           {
             username: "founder42",
             platform: "Reddit",
             time: new Date(Date.now() - 86400000).toISOString(),
-            text: `Any alternatives to ${competitor}? It's too bloated for most ${target}.`,
+            text: `Any alternatives to ${competitor}? It's not ideal for most ${target}.`,
             match: 88,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -45,7 +44,7 @@ const Dashboard = () => {
             username: "leanbizowner",
             platform: "Reddit",
             time: new Date(Date.now() - 172800000).toISOString(),
-            text: `Looking for better tools to solve "${pain}". Any favorites here?`,
+            text: `We’re moving away from older options — anyone using newer ${primaryKeyword}? Any favorites here?`,
             match: 91,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -54,7 +53,7 @@ const Dashboard = () => {
             username: "nocoderx",
             platform: "Reddit",
             time: new Date(Date.now() - 259200000).toISOString(),
-            text: `We tried ${businessName} for ${primaryKeyword}, but didn’t love it. Open to ideas.`,
+            text: `Trying to reduce friction in ${pain}. What solutions are people loving right now?`,
             match: 86,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
