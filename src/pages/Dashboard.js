@@ -23,10 +23,12 @@ const Dashboard = () => {
 
         console.log("✅ Fetched from Firestore:", latest);
 
-        const businessName = latest?.businessName || "Your CRM";
+        const businessName = latest?.businessName || "Your Startup";
         const competitor = latest?.competitor || "Hubspot";
-        const problem = latest?.painSummary || "client follow-up management";
-        const target = latest?.targetCustomer || "law firms";
+        const target = latest?.targetCustomer || "consultants";
+        const keywords = latest?.industryKeywords?.split(",").map(k => k.trim()).filter(Boolean) || [];
+        const primaryKeyword = keywords[0] || "tools";
+        const pain = latest?.painSummary || "keeping client work organized";
 
         // 🧪 Fake personalized results
         const fakeLeads = [
@@ -34,8 +36,8 @@ const Dashboard = () => {
             username: "founder42",
             platform: "Reddit",
             time: new Date(Date.now() - 86400000).toISOString(),
-            text: `Any alternatives to ${competitor}? It's too complex for my team.`,
-            match: 89,
+            text: `Any alternatives to ${competitor}? It's too bloated for most ${target}.`,
+            match: 88,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
           },
@@ -43,16 +45,16 @@ const Dashboard = () => {
             username: "leanbizowner",
             platform: "Reddit",
             time: new Date(Date.now() - 172800000).toISOString(),
-            text: `What are you using for ${problem}? Looking for something simpler.`,
+            text: `Looking for better tools to solve "${pain}". Any favorites here?`,
             match: 91,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
           },
           {
-            username: "tiredofcrm",
+            username: "nocoderx",
             platform: "Reddit",
             time: new Date(Date.now() - 259200000).toISOString(),
-            text: `Need help organizing client workflows. ${businessName} doesn't fit my use case.`,
+            text: `We tried ${businessName} for ${primaryKeyword}, but didn’t love it. Open to ideas.`,
             match: 86,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -64,7 +66,7 @@ const Dashboard = () => {
             username: "techstruggles",
             platform: "Reddit",
             time: new Date(Date.now() - 200000000).toISOString(),
-            text: `${competitor} keeps crashing when I try to update contact info.`,
+            text: `${competitor} keeps crashing when I try to manage ${target} accounts.`,
             match: 84,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -76,7 +78,7 @@ const Dashboard = () => {
             username: "legaltechfan",
             platform: "Reddit",
             time: new Date(Date.now() - 300000000).toISOString(),
-            text: `Used ${businessName} for a month — great idea but missing key features for ${target}.`,
+            text: `Used ${businessName} for a project — promising but needs better ${primaryKeyword}.`,
             match: 77,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -103,42 +105,20 @@ const Dashboard = () => {
 
     fetchFakeLeads();
 
-    // 🔒 Future live data logic (disabled for beta)
+    // 🔒 Future real scraping logic (disabled in BETA)
     /*
     const fetchLeads = async () => {
-      try {
-        const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
-        const result = await res.json();
-        const latest = result?.data?.[0];
-
-        setFilteredLeads(latest?.reddit?.leads || []);
-
-        if (latest?.reddit?.leads?.length > 0) {
-          setScrapedData({
-            leads: latest.reddit.leads,
-            competitor_complaints: latest.reddit.competitorComplaints || [],
-            company_complaints: latest.reddit.companyComplaints || [],
-          });
-        }
-
-        if (latest?.businessName && latest?.niche) {
-          setFormData({
-            businessName: latest.businessName,
-            niche: latest.niche,
-          });
-        }
-      } catch (err) {
-        console.error("❌ Error fetching leads:", err);
-      } finally {
-        setLoading(false);
-      }
+      const res = await fetch(`https://convertscout-backend.onrender.com/api/leads/${email}`);
+      const result = await res.json();
+      const latest = result?.data?.[0];
+      setFilteredLeads(latest?.reddit?.leads || []);
+      ...
     };
-
     fetchLeads();
     */
   }, []);
 
-  // ✅ Render charts (can remain in beta too)
+  // ✅ Chart rendering remains unchanged
   useEffect(() => {
     if (!scrapedData) return;
 
@@ -206,7 +186,6 @@ const Dashboard = () => {
     });
   }, [scrapedData]);
 
-  // ✅ Show loading (optional during beta)
   if (loading) {
     return (
       <div className="text-center py-20 text-lg text-[#FF6F61] font-medium animate-pulse">
@@ -215,7 +194,6 @@ const Dashboard = () => {
     );
   }
 
-  // ✅ Show fallback if no data
   if (!scrapedData || !scrapedData.leads || scrapedData.leads.length === 0) {
     return (
       <div className="text-center py-20 text-lg text-[#999] font-medium">
