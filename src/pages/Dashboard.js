@@ -65,7 +65,7 @@ const Dashboard = () => {
             username: "techstruggles",
             platform: "Reddit",
             time: new Date(Date.now() - 200000000).toISOString(),
-            text: `${competitor} keeps crashing when I try to manage ${target} accounts.`,
+            text: `${competitor} is getting expensive...`,
             match: 84,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
@@ -77,7 +77,7 @@ const Dashboard = () => {
             username: "legaltechfan",
             platform: "Reddit",
             time: new Date(Date.now() - 300000000).toISOString(),
-            text: `Used ${businessName} for a project — promising but needs better ${primaryKeyword}.`,
+            text: `Used ${businessName} last month, loved it`,
             match: 77,
             connect_url: "https://convertscout.netlify.app/pay-signup",
             profile_picture: null
