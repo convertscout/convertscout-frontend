@@ -1,76 +1,45 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
 import "../styles/pay-signup.css";
 
 const PaySignup = () => {
-  const navigate = useNavigate();
-  const [showSignup, setShowSignup] = useState(false);
-
   useEffect(() => {
-    // Load PayPal SDK dynamically
     const script = document.createElement("script");
     script.src =
-      "https://www.paypal.com/sdk/js?client-id=AUygnfZj64C_ImWfiYL3Vo2rG0sQ0_hU1ZK1mOKb5gPiKufy7-Y4IW0PVgD-sUEG1sLTRlbrrG8Muqnz&vault=true&intent=subscription";
-    script.setAttribute("data-sdk-integration-source", "button-factory");
+      "https://www.paypal.com/sdk/js?client-id=BAA_5TVV3AMTOmQKA3cZPtKPEtofQZ1B0NDaI30qx9TMSjG5btXuua0Q7PtVTo-zWN4q-3kkusTtIWi3-I&components=hosted-buttons&disable-funding=venmo&currency=USD";
     script.async = true;
     script.onload = () => {
-      window.paypal
-        .Buttons({
-          style: {
-            shape: "rect",
-            color: "gold",
-            layout: "vertical",
-            label: "paypal",
-          },
-          createSubscription: (data, actions) => {
-            return actions.subscription.create({
-              plan_id: "P-1NH848553U860034RM7SP5QI",
-            });
-          },
-          onApprove: (data) => {
-            alert("Subscription successful! Subscription ID: " + data.subscriptionID);
-            setShowSignup(true);
-          },
-          onError: (err) => {
-            console.error("PayPal Error:", err);
-            alert("An error occurred during the payment process. Please try again.");
-          },
-        })
-        .render("#paypal-button-container-P-1NH848553U860034RM7SP5QI");
+      window.paypal.HostedButtons({
+        hostedButtonId: "R86CJFD6EKQ9W",
+      }).render("#paypal-container-R86CJFD6EKQ9W");
     };
     document.body.appendChild(script);
   }, []);
-
-  const handleSignupSubmit = (e) => {
-    e.preventDefault();
-    alert("Account created! Redirecting to dashboard...");
-    navigate("/dashboard");
-  };
 
   return (
     <div className="min-h-screen bg-[#F7F7F7]">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center px-4">
           <h1 className="font-bold text-2xl text-[#333333]">ConvertScout</h1>
-          <button
-            id="login-btn"
-            className="bg-[#FF6F61] text-white hover:bg-[#E55A4B] hover:shadow-md transition-all px-4 py-2 rounded-md text-sm"
-            onClick={() => alert("Login to access your full dashboard!")}
-          >
-            Login
-          </button>
+          <span className="text-sm text-[#FF6F61] font-medium">#BETA</span>
         </div>
 
         <div className="py-16">
           <div className="w-full max-w-4xl mx-auto">
-            {/* Payment Section */}
-            <div id="payment-section" className={showSignup ? "hidden" : ""}>
+            <div id="payment-section">
               <h2 className="text-3xl font-bold text-[#FF6F61] mb-2 text-center">
-                Unlock the Full Power of ConvertScout
+                Become a Founding Member of ConvertScout 🚀
               </h2>
               <p className="text-[#333333] mb-8 text-center text-lg">
-                Everything you need to find leads and crush your growth goals—$79/mo
+                One-time payment. Lifetime access to early-stage power.
               </p>
+
+              <div className="text-center text-[#666666] max-w-2xl mx-auto mb-8 text-sm leading-relaxed">
+                You’ll help us build the most powerful scraping tool for founders—
+                across Reddit, X, Facebook, Capterra, G2, and niche forums.
+                <br />
+                No subscription. No renewal. Just <strong>$199 one-time</strong> to unlock:
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white/90 backdrop-blur-md border border-white/30 shadow-xl rounded-xl p-6 text-center">
                   <svg
@@ -91,7 +60,7 @@ const PaySignup = () => {
                     Unlimited Leads
                   </h3>
                   <p className="text-[#666666] text-sm">
-                    Access every lead we find—no caps, no limits.
+                    All the real-time buyer intent across every platform—no limits.
                   </p>
                 </div>
                 <div className="bg-white/90 backdrop-blur-md border border-white/30 shadow-xl rounded-xl p-6 text-center">
@@ -110,10 +79,10 @@ const PaySignup = () => {
                     />
                   </svg>
                   <h3 className="text-lg font-semibold text-[#333333] mb-2">
-                    Real-Time Insights
+                    Smart AI Filtering
                   </h3>
                   <p className="text-[#666666] text-sm">
-                    Fresh data on complaints and pain points, updated hourly.
+                    Our models find the *frustration signals* that indicate buying intent.
                   </p>
                 </div>
                 <div className="bg-white/90 backdrop-blur-md border border-white/30 shadow-xl rounded-xl p-6 text-center">
@@ -132,73 +101,24 @@ const PaySignup = () => {
                     />
                   </svg>
                   <h3 className="text-lg font-semibold text-[#333333] mb-2">
-                    Competitor Intel
+                    Competitive Intel
                   </h3>
                   <p className="text-[#666666] text-sm">
-                    See what your competitors are doing wrong—and capitalize.
+                    See what your competitors are doing wrong—and use it to grow.
                   </p>
                 </div>
               </div>
+
+              {/* PayPal Hosted Button */}
               <div className="max-w-md mx-auto bg-white/90 backdrop-blur-md border border-white/30 shadow-xl rounded-xl p-6">
                 <div
-                  id="paypal-button-container-P-1NH848553U860034RM7SP5QI"
+                  id="paypal-container-R86CJFD6EKQ9W"
                   className="border border-[#FF6F61] p-4 rounded-lg"
                 ></div>
               </div>
             </div>
-            {/* Signup Section */}
-            <div
-              id="signup-section"
-              className={`max-w-md mx-auto bg-white/90 backdrop-blur-md border border-white/30 shadow-xl rounded-xl p-6 mt-6 ${
-                showSignup ? "" : "hidden"
-              }`}
-            >
-              <h2 className="text-2xl font-bold text-[#FF6F61] mb-2 text-center">
-                You’re In—Claim Your Account
-              </h2>
-              <p className="text-[#333333] mb-6 text-center">
-                Sign up to unleash your leads
-              </p>
-              <form className="space-y-6" onSubmit={handleSignupSubmit}>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-[#333333] font-medium mb-1"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="you@business.com"
-                    className="w-full px-4 py-2 rounded-md border border-[#FF6F61]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block text-[#333333] font-medium mb-1"
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    placeholder="••••••••"
-                    className="w-full px-4 py-2 rounded-md border border-[#FF6F61]"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-[#FF6F61] hover:bg-[#E55A4B] text-white font-medium py-2 px-4 rounded-md"
-                >
-                  Sign Up
-                </button>
-              </form>
-            </div>
-            {/* Back to Dashboard Button */}
+
+            {/* Back to Dashboard */}
             <div className="mt-12 text-center">
               <a
                 href="/dashboard"
