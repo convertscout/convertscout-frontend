@@ -35,8 +35,10 @@ const PaySignup = () => {
             <div className="text-center text-[#666666] max-w-2xl mx-auto mb-8 text-sm leading-relaxed">
               You’re backing a new lead finder built for growth-minded founders—
               pulling high-signal leads from Reddit, X, Facebook, G2, Capterra,
-              and niche forums. No subscriptions. No hidden fees.
-              Just a one-time contribution to shape the future of lead generation.
+              and niche forums.
+              <br />
+              After your 2-month Founding Member pass, ConvertScout will cost{" "}
+              <strong>$69/month</strong> for unlimited access (no credit system).
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -85,14 +87,6 @@ const PaySignup = () => {
                 <h3 className="text-lg font-semibold text-[#333333] mb-2">💎 Founding Badge</h3>
                 <p className="text-[#666666] text-sm">
                   A “Founding Member” tag permanently displayed on your dashboard.
-                </p>
-              </div>
-
-              {/* One-Time Payment */}
-              <div className="bg-white/90 border border-white/30 shadow-xl rounded-xl p-6 text-center col-span-1 md:col-span-3">
-                <h3 className="text-lg font-semibold text-[#333333] mb-2">🔒 One-Time Payment</h3>
-                <p className="text-[#666666] text-sm">
-                  $199 once. No subscriptions. Ever.
                 </p>
               </div>
             </div>
